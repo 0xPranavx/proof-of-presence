@@ -12,13 +12,18 @@ import Web3Auth, {
 
 import * as WebBrowser from "expo-web-browser";
 import * as SecureStore from 'expo-secure-store';
+import Constants, { AppOwnership } from "expo-constants";
+import * as Linking from "expo-linking";
 import { Buffer } from "buffer";
 
 global.Buffer = global.Buffer || Buffer;
 
 const scheme = "pop";
 
-const resolvedRedirectUrl = `${scheme}://auth`;
+const resolvedRedirectUrl =
+  Constants.appOwnership == AppOwnership.Expo || Constants.appOwnership == AppOwnership.Guest
+    ? Linking.createURL("web3auth", {})
+    : Linking.createURL("web3auth", { scheme: scheme });
 
 const clientId = "BJokBlpfPMAN8iWCO4jQmpCqhi27e14yuAFx7s2ThQaHKLrDWRmgjVzf3y47qdr78lf-XO0qvq6yDEBTMvboTvU"
 
