@@ -1,5 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants, { AppOwnership } from "expo-constants";
+import * as Linking from "expo-linking";
 
 // import { getAccounts } from "../utils/RPC/rpcFunctions"
 
@@ -15,10 +17,14 @@ import * as SecureStore from 'expo-secure-store';
 import { Buffer } from "buffer";
 
 global.Buffer = global.Buffer || Buffer;
+const resolvedRedirectUrl =
+  Constants.appOwnership == AppOwnership.Expo || Constants.appOwnership == AppOwnership.Guest
+    ? Linking.createURL("web3auth", {})
+    : Linking.createURL("web3auth", { scheme });
 
-const scheme = "pop";
+const scheme = "pop"; 
 
-const resolvedRedirectUrl = `${scheme}://auth`;
+//const resolvedRedirectUrl = `${scheme}://auth`;
 
 const clientId = "BJokBlpfPMAN8iWCO4jQmpCqhi27e14yuAFx7s2ThQaHKLrDWRmgjVzf3y47qdr78lf-XO0qvq6yDEBTMvboTvU"
 
@@ -30,6 +36,7 @@ const WalletProvider = ({ children }) => {
 	const [userData, setUserData] = useState(null);
 	const [key, setKey] = useState(null);
 	const [pubKey, setPubKey] = useState(null);
+	const [loggedIn , setLoggedIn] =  useState(true);
 	const [loading, setLoading] = useState(true);
 
     const getAccounts = (key) => {
@@ -48,7 +55,9 @@ const WalletProvider = ({ children }) => {
     };
 
 	async function loadStorageData() {
+		
 		try {
+			
 			//Try get the data from Async Storage
 			const userData = await AsyncStorage.getItem("@UserData");
 			const privKey = await SecureStore.getItemAsync("@PrivKey");
@@ -83,7 +92,7 @@ const WalletProvider = ({ children }) => {
 					dark: true, // whether to enable dark mode. defaultValue: false
 				},
 			});
-
+			
 			const loginData = await web3auth.login({
 				// loginProvider: LOGIN_PROVIDER.FACEBOOK,
 				loginProvider: LOGIN_PROVIDER.GOOGLE,
@@ -105,21 +114,27 @@ const WalletProvider = ({ children }) => {
 			setPubKey(address)
 			setUserData(loginData)
 
+			
 			//Persist the data in the Async Storage
 			//to be recovered in the next user session.
 			AsyncStorage.setItem("@UserData", JSON.stringify(loginData));
 			await SecureStore.setItemAsync("@PrivKey", loginData.privKey);
+			
 
 		} catch (error) {
+			setLoggedIn(false);
+			console.log(error);
 			//If the service call fails, throw an error
 			// throw new Error("Error on login");
 			// uiConsole(error)
 		} finally {
 			//loading finished
 			setLoading(false);
+			
 		}
 
 	};
+	
 
 	const logout = async () => {
 		try {
@@ -150,6 +165,7 @@ const WalletProvider = ({ children }) => {
 		login,
 		logout,
 		loading,
+		loggedIn,
 	}
 
 	return (
