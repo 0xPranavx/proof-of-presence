@@ -226,7 +226,7 @@ export default function Presence({ navigation }) {
                     <Pressable
                       style={[styles.button, styles.buttonClose]}
                       onPress={() =>
-                        openLink(`https://testnets.opensea.io/assets/mumbai/</View></View>/${CONTRACT_ADDRESS}/${tokenId}`)
+                        openLink(`https://testnets.opensea.io/assets/mumbai/${CONTRACT_ADDRESS}/${tokenId}`)
                       }
                     >
                       <Text style={styles.textStyle}>View on OpenSea</Text>
