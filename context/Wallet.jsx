@@ -1,7 +1,6 @@
+import "@ethersproject/shims";
 import React, { createContext, useState, useContext, useEffect } from "react";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Constants, { AppOwnership } from "expo-constants";
-import * as Linking from "expo-linking";
 
 // import { getAccounts } from "../utils/RPC/rpcFunctions"
 
@@ -10,7 +9,8 @@ import Web3Auth, {
 	OPENLOGIN_NETWORK,
 	MFA_LEVELS,
 } from "@web3auth/react-native-sdk";
-// import { ethers } from "ethers";
+
+import { ethers } from "ethers";
 
 import * as WebBrowser from "expo-web-browser";
 import * as SecureStore from 'expo-secure-store';
@@ -19,11 +19,6 @@ import * as Linking from "expo-linking";
 import { Buffer } from "buffer";
 
 global.Buffer = global.Buffer || Buffer;
-const resolvedRedirectUrl =
-  Constants.appOwnership == AppOwnership.Expo || Constants.appOwnership == AppOwnership.Guest
-    ? Linking.createURL("web3auth", {})
-    : Linking.createURL("web3auth", { scheme });
-
 const scheme = "pop"; 
 
 
@@ -47,18 +42,17 @@ const WalletProvider = ({ children }) => {
 	const [loading, setLoading] = useState(true);
 
     const getAccounts = (key) => {
-    //     try {
-    //         if (key) {
-    //             const wallet = new ethers.Wallet(key);
-    //             const address = wallet.address;
-    //             return address;
-	return "0x0"
-    //         } else {
-    //             return null;
-    //         }
-    //     } catch (error) {
-    //         return error;
-    //     }
+        try {
+            if (key) {
+                const wallet = new ethers.Wallet(key);
+                const address = wallet.address;
+                return address;
+            } else {
+                return null;
+            }
+        } catch (error) {
+            return error;
+        }
     };
 
 	async function loadStorageData() {
@@ -67,7 +61,7 @@ const WalletProvider = ({ children }) => {
 			
 			//Try get the data from Async Storage
 			const userData = await AsyncStorage.getItem("@UserData");
-			const privKey = await SecureStore.getItemAsync("@PrivKey");
+			const privKey = await AsyncStorage.getItem("@PrivKey");
 			if (userData && privKey) {
 				setUserData(JSON.parse(userData));
 				setKey(privKey);
@@ -120,12 +114,13 @@ const WalletProvider = ({ children }) => {
 			const address = await getAccounts(loginData.privKey)
 			setPubKey(address)
 			setUserData(loginData)
+			setLoggedIn(true);
 
 			
 			//Persist the data in the Async Storage
 			//to be recovered in the next user session.
 			AsyncStorage.setItem("@UserData", JSON.stringify(loginData));
-			await SecureStore.setItemAsync("@PrivKey", loginData.privKey);
+			AsyncStorage.setItem("@PrivKey", loginData.privKey);
 			
 
 		} catch (error) {
@@ -153,7 +148,7 @@ const WalletProvider = ({ children }) => {
 			//to NOT be recoverede in next session.
 			await AsyncStorage.removeItem("@UserData");
 			// await AsyncStorage.removeItem("@PrivKey");
-			await SecureStore.deleteItemAsync("@PrivKey");
+			await AsyncStorage.removeItem("@PrivKey");
 			// await AsyncStorage.removeItem("@FirstTime");
 		} catch (error) {
 		}
