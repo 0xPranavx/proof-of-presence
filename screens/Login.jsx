@@ -6,6 +6,12 @@ import { useWallet } from '../context/Wallet'
 const Login = ({ navigation }) => {
 
     const { login, userData , loggedIn } = useWallet() ;
+
+    const loginFunc = async () => {
+        await login() ;
+        console.log(`login page - ${loggedIn}`);
+        loggedIn && navigation.navigate("Profile");
+    }
     
 
   return (
