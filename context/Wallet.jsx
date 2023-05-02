@@ -67,6 +67,7 @@ const WalletProvider = ({ children }) => {
 				setKey(privKey);
 				const address = await getAccounts(privKey)
 				setPubKey(address)
+				setLoggedIn(true);
 				// uiConsole("Logged In");
 			}
 		} catch (error) {
@@ -107,11 +108,12 @@ const WalletProvider = ({ children }) => {
 			//Set the data in the context, so the App can be notified
 			//and send the user to the AuthStack
 			setKey(loginData.privKey)
-
+			// console.log(loginData.privKey)
 			// Check if a user logged in for the first time or not in database
 			// If not, create a new user in database and onboarding flow
 			// else go to Home screen
 			const address = await getAccounts(loginData.privKey)
+			console.log("Address :", address)
 			setPubKey(address)
 			setUserData(loginData)
 			setLoggedIn(true);
@@ -168,6 +170,7 @@ const WalletProvider = ({ children }) => {
 		logout,
 		loading,
 		loggedIn,
+		loadStorageData
 	}
 
 	return (

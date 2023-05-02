@@ -1,11 +1,12 @@
 import { View, Text, TouchableOpacity ,Image ,StyleSheet} from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useWallet } from '../context/Wallet'
 
 const Login = ({ navigation }) => {
 
-    const { login, userData , loggedIn } = useWallet() ;
+    const { login, userData , loggedIn, loadStorageData } = useWallet() ;
 
     const loginFunc = async () => {
         await login() ;
@@ -13,6 +14,9 @@ const Login = ({ navigation }) => {
         loggedIn && navigation.navigate("Profile");
     }
     
+    useEffect(() => {
+      loadStorageData()
+    }, []);
 
   return (
     // Container with button for login and if userData present then text

@@ -11,6 +11,9 @@ import "expo-dev-client"
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+
+
+
 	return (
 		<WalletProvider>
 			<NavigationContainer>
