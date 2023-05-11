@@ -1,6 +1,13 @@
-export const CONTRACT_ADDRESS = '0x6d11b31b8E9Da4557d07B763a69498f9416207D8';
+export const CONTRACT_ADDRESS = "0xeD6c628e5B778510dC27Aae2004156fCd303950c"
 
 export const CONTRACT_ABI = [
+	{
+		"inputs": [],
+		"name": "_safeMint",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
 	{
 		"inputs": [],
 		"stateMutability": "nonpayable",
@@ -75,41 +82,11 @@ export const CONTRACT_ABI = [
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "location",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "review",
-				"type": "string"
-			}
-		],
+		"inputs": [],
 		"name": "mintNFT",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "sender",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "uint256",
-				"name": "tokenId",
-				"type": "uint256"
-			}
-		],
-		"name": "NFTMinted",
-		"type": "event"
 	},
 	{
 		"inputs": [
@@ -242,40 +219,6 @@ export const CONTRACT_ABI = [
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "location",
-				"type": "string"
-			},
-			{
-				"internalType": "uint256",
-				"name": "tokenId",
-				"type": "uint256"
-			},
-			{
-				"internalType": "string",
-				"name": "minterAddress",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "review",
-				"type": "string"
-			}
-		],
-		"name": "generateSvg",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
 			}
 		],
 		"stateMutability": "view",

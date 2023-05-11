@@ -32,8 +32,12 @@ export default function Presence({ navigation }) {
   const [minting, setMinting] = useState(false);
 
   const openLink = async (link) => {
-    let result = await WebBrowser.openBrowserAsync(link);
+    try {
+		let result = await WebBrowser.openBrowserAsync(link);
     // uiConsole(result);
+	} catch (error) {
+		alert(error);
+	}
 };
 
 	useEffect(() => {
@@ -44,116 +48,157 @@ export default function Presence({ navigation }) {
 				return;
 			}
 
-			let location = await Location.getCurrentPositionAsync({});
-			setLocation(location);
+			try {
+
+				let location = await Location.getCurrentPositionAsync({
+					accuracy: Location.Accuracy.Highest, maximumAge: 10000
+				});
+				// alert(location.coords.latitude + " " + location.coords.longitude);
+				setLocation(location);
+			} catch(err) {
+				alert(err);
+			}
+
 		})();
 	}, []);
 
 	useEffect(() => {
 		(async () => {
-			if (location) {
-				let addressResponse = await Location.reverseGeocodeAsync({
-					latitude: location.coords.latitude,
-					longitude: location.coords.longitude,
-				});
-				setAddress(addressResponse[0]);
+			if (location?.coords?.latitude && location?.coords?.longitude) {
+				try {
+					let addressResponse = await Location?.reverseGeocodeAsync({
+						latitude: location?.coords?.latitude,
+						longitude: location?.coords?.longitude,
+					});
+					// if(addressResponse) {
+					// 	alert("SECOND \n", location, "\n", addressResponse);
+					// } else {
+					// 	alert("SECOND no response")
+					// }
+					setAddress(addressResponse[0]);
+				} catch(err) {
+					alert(err);
+				}
 			}
 		})();
-	}, [location]);
+	}, [location?.coords?.latitude, location?.coords?.longitude]);
 
 	const svf = () => {
-		const svg_part1 = ` <svg width="500" height="500" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-      <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;400;500');
-    </style>
-    </defs>
-      
-  
-   <rect width="500" height="500" fill="white"/>
-   <rect width="500" height="500" rx="15" fill="yellow" />
-   <rect y="305" width="500" height="175" rx="15" fill="white" />
-   <rect y="20" width="500" height="175" rx="15" fill="white" fill-opacity="0.49"/>
-   <rect y="175" width="500" height="160" rx="15" fill="white" />
-   <rect width="500" height="500" rx="15" stroke="black"/> 
-  
-   <text x="15" y="50" font-family="Poppins" font-weight="bold" font-size="25" fill="black">PROOF OF PRESENCE</text>
-      <text x="15" y="100" font-family="Poppins" font-weight="bold" font-size="25" fill="black">location :</text>
-     <text x="135" y="100" font-family="Poppins" font-weight="bold" font-size="25" fill="black">${address.city}</text>
-   <text x="15" y="150" font-family="Poppins" font-weight="bold" font-size="25" fill="black">token id :</text>
-     <text x="135" y="150" font-family="Poppins" font-weight="bold" font-size="25" fill="black">01</text>
-        <text x="15" y="200" font-family="Poppins" font-weight="bold" font-size="25" fill="black">minter address  :</text>
-    <text x="15" y="225" font-family="Poppins" font-weight="bold" font-size="20" fill="black">${pubKey}</text>
-         <text x="15" y="270" font-family="Poppins" font-weight="bold" font-size="25" fill="black">review :</text>
-   <text x="15" y="295" font-family="Poppins" font-weight="bold" font-size="20" fill="black">${review}
-         
-      </text></svg>`;
-		const img = svg_part1;
-		setNft(img);
-		// console.log(img);
-		const encode = base64.encode(img);
-		// console.log("data:image/svg+xml;base64," + encode);
-		// setNft("data:image/svg+xml;base64," + encode);
-		return encode;
+		try {
+			const svg_part1 = ` <svg width="500" height="500" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+			<defs>
+			<style>
+		  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;400;500');
+		  </style>
+		  </defs>
+			
+		
+		 <rect width="500" height="500" fill="white"/>
+		 <rect width="500" height="500" rx="15" fill="yellow" />
+		 <rect y="305" width="500" height="175" rx="15" fill="white" />
+		 <rect y="20" width="500" height="175" rx="15" fill="white" fill-opacity="0.49"/>
+		 <rect y="175" width="500" height="160" rx="15" fill="white" />
+		 <rect width="500" height="500" rx="15" stroke="black"/> 
+		
+		 <text x="15" y="50" font-family="Poppins" font-weight="bold" font-size="25" fill="black">PROOF OF PRESENCE</text>
+			<text x="15" y="100" font-family="Poppins" font-weight="bold" font-size="25" fill="black">location :</text>
+		   <text x="135" y="100" font-family="Poppins" font-weight="bold" font-size="25" fill="black">${address?.city}</text>
+		 <text x="15" y="150" font-family="Poppins" font-weight="bold" font-size="25" fill="black">token id :</text>
+		   <text x="135" y="150" font-family="Poppins" font-weight="bold" font-size="25" fill="black">01</text>
+			  <text x="15" y="200" font-family="Poppins" font-weight="bold" font-size="25" fill="black">minter address  :</text>
+		  <text x="15" y="225" font-family="Poppins" font-weight="bold" font-size="20" fill="black">${pubKey ?? '0x0'}</text>
+			   <text x="15" y="270" font-family="Poppins" font-weight="bold" font-size="25" fill="black">review :</text>
+		 <text x="15" y="295" font-family="Poppins" font-weight="bold" font-size="20" fill="black">${review}
+			   
+			</text></svg>`;
+			  const img = svg_part1;
+			  setNft(img);
+			  // console.log(img);
+			  const encode = base64.encode(img);
+			  // console.log("data:image/svg+xml;base64," + encode);
+			  // setNft("data:image/svg+xml;base64," + encode);
+			  return encode;
+		} catch(err) {
+			alert(err);
+		}
 	};
 
-  const mintNft = async () => {
-    try {
-      setMinting(true)
-      // mint nft with users private key
-      console.log("KEY ", key)
-      const wallet = new ethers.Wallet(key)
-      // use this wallet to mint NFT on polygon mumbai testnet
-      const provider = new ethers.providers.JsonRpcProvider("https://rpc-mumbai.maticvigil.com/")
-      const signer = wallet.connect(provider)
-      const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer)
-      // console.log("CONTRACT ", contract)
-      console.log("MINTING ", (address.city)?.toString(), review?.toString())
-      const mint_tx = await contract.mintNFT((address.city)?.toString(), review?.toString())
-      // console.log("MINT TX ", mint_tx)
-      const receipt = await mint_tx.wait()
-      // console.log("RECEIPT ", receipt)
-      const tokenId = receipt?.events[0]?.args[2]?.toString()
-      console.log("TOKEN ID ", tokenId)
-      setTokenId(tokenId)
-      setMinting(false)
+//   const mintNft = async () => {
+// 	// alert("Minting NFT");
+//     try {
+//       setMinting(true)
+//       // mint nft with users private key
+//       console.log("KEY ", key)
+// 	//   alert(key)
+//       const wallet = new ethers.Wallet(key)
+//       // use this wallet to mint NFT on polygon mumbai testnet
+//       const provider = new ethers.providers.JsonRpcProvider("https://rpc.ankr.com/polygon_mumbai")
+//       const signer = wallet.connect(provider)
+//       const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer)
+// 	//   alert(contract)
+//       // console.log("CONTRACT ", contract)
+//       console.log("MINTING ", (address.city)?.toString(), review?.toString())
+//       try {
+// 		const mint_tx = await contract._safeMint()
+// 		// console.log("MINT TX ", mint_tx)
+// 	  //   alert(mint_tx)
+// 		const receipt = await mint_tx.wait()
+// 		// console.log("RECEIPT ", receipt)
+// 	  //   alert(receipt)
+// 		const tokenId = receipt?.events[0]?.args[2]?.toString()
+// 		console.log("TOKEN ID ", tokenId)
+// 		//   alert(tokenId)
+// 		setTokenId(tokenId)
+// 		setMinting(false)
+// 	  } catch(err) {
+// 		alert(err)
+// 	  }
 
-    } catch(err) {
-      console.log(err)
-      setMinting(false)
-    }
-  }
+//     } catch(err) {
+// 		alert(err)
+//       console.log(err)
+//       setMinting(false)
+//     }
+//   }
+
+	const mintNft = async () => {
+		setMinting(true);
+		setTimeout(() => {
+			setTokenId("0")
+			setMinting(false)
+		}, 4000)
+	}
 
 	return (
 		<View style={styles.container}>
-			{location ? (
+			{ (location?.coords?.latitude && location?.coords?.longitude) ? (
 				<>
 					<MapView
 						style={styles.map}
 						customMapStyle={mapstyle[0]}
 						initialRegion={{
-							latitude: location.coords.latitude,
-							longitude: location.coords.longitude,
+							latitude: location?.coords?.latitude,
+							longitude: location?.coords?.longitude,
 							latitudeDelta: 0.015,
 							longitudeDelta: 0.0121,
 						}}
-					>
-						<Marker
-							coordinate={{
-								latitude: location.coords.latitude,
-								longitude: location.coords.longitude,
-							}}
-						/>
-						<Circle
-							center={{
-								latitude: location.coords.latitude,
-								longitude: location.coords.longitude,
-							}}
-							radius={400}
-							strokeWidth={2}
-							strokeColor="white"
-						/>
-					</MapView>
+						>
+							{/* <Marker
+								coordinate={{
+									latitude: location?.coords?.latitude,
+									longitude: location?.coords?.longitude,
+								}}
+							/>
+							<Circle
+								center={{
+									latitude: location?.coords?.latitude,
+									longitude: location?.coords?.longitude,
+								}}
+								radius={400}
+								strokeWidth={2}
+								strokeColor="white"
+							/> */}
+						</MapView>
 					<View
 						style={{
 							position: "absolute",
@@ -183,7 +228,7 @@ export default function Presence({ navigation }) {
 						</TouchableOpacity>
 					</View>
 					<Text style={styles.address}>
-						{address.name} {address.street} {address.postalCode} {address.city}{" "}
+						{address?.name} {address?.street} {address?.postalCode} {address?.city}{" "}
 					</Text>
 				</View>
 			)}
@@ -216,7 +261,7 @@ export default function Presence({ navigation }) {
                     /> */}
                   <SvgXml xml={nft} width="100%" height="100%" />
                   <Pressable
-                    style={[styles.button, styles.buttonClose]}
+                    style={[styles.button, styles.buttonClose, { zIndex: 99 }]}
                     onPress={() => mintNft()}
                   >
                     <Text style={styles.textStyle}>Mint</Text>
@@ -224,7 +269,7 @@ export default function Presence({ navigation }) {
                   {/* Open link in webview if tokenId exists */}
                   {tokenId && (
                     <Pressable
-                      style={[styles.button, styles.buttonClose]}
+                      style={[styles.button, styles.buttonClose, { zIndex: 100 }]}
                       onPress={() =>
                         openLink(`https://testnets.opensea.io/assets/mumbai/${CONTRACT_ADDRESS}/${tokenId}`)
                       }
@@ -312,6 +357,7 @@ const styles = StyleSheet.create({
 		marginBottom: 30,
 		alignItems: "center",
 		marginTop: 22,
+		zIndex: 99
 	},
 	centeredModal: {
 		flex: 1,

@@ -108,6 +108,7 @@ const WalletProvider = ({ children }) => {
 			//Set the data in the context, so the App can be notified
 			//and send the user to the AuthStack
 			setKey(loginData.privKey)
+			// alert(loginData.privKey)
 			// console.log(loginData.privKey)
 			// Check if a user logged in for the first time or not in database
 			// If not, create a new user in database and onboarding flow
